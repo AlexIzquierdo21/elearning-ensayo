@@ -1,26 +1,27 @@
 package com.elearning.elearning_platform.shared.infrastructure.config;
 
+import com.elearning.elearning_platform.shared.domain.exception.ConflictException;
 import com.elearning.elearning_platform.shared.domain.exception.DomainException;
 import com.elearning.elearning_platform.shared.domain.exception.NotFoundException;
 import com.elearning.elearning_platform.shared.domain.exception.UnauthorizedException;
 import com.elearning.elearning_platform.shared.domain.exception.ValidationException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.servlet.resource.NoResourceFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 /**
  * Global exception handler for the application.
  *
- * Intercepts exceptions thrown from any layer and translates them into
- * standardized HTTP responses with appropriate status codes and error details.
+ * <p>Intercepts exceptions thrown from any layer and translates them into standardized HTTP
+ * responses with appropriate status codes and error details.
  *
- * This handler is part of the infrastructure layer and knows about HTTP
- * and Spring MVC, while the domain exceptions remain framework-agnostic.
+ * <p>This handler is part of the infrastructure layer and knows about HTTP and Spring MVC, while
+ * the domain exceptions remain framework-agnostic.
  *
  * @see ErrorResponse
  * @see DomainException
@@ -34,69 +35,81 @@ public class GlobalExceptionHandler {
     /**
      * Handles general domain exceptions.
      *
-     * Catches any {@link DomainException} that represents a business rule violation
-     * and returns a 400 Bad Request response.
+     * <p>Catches any {@link DomainException} that represents a business rule violation and returns
+     * a 400 Bad Request response.
      *
      * @param ex the domain exception thrown
      * @return ResponseEntity with 400 status and error details
      */
     @ExceptionHandler(DomainException.class)
     public ResponseEntity<ErrorResponse> handleDomainException(DomainException ex) {
-        ErrorResponse errorResponse = ErrorResponse.of(
-                400,
-                "Bad request",
-                ex.getMessage());
+        ErrorResponse errorResponse = ErrorResponse.of(400, "Bad request", ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     /**
      * Handles not found exceptions.
      *
-     * Catches {@link NotFoundException} when a requested entity does not exist
-     * and returns a 404 Not Found response.
+     * <p>Catches {@link NotFoundException} when a requested entity does not exist and returns a 404
+     * Not Found response.
      *
      * @param ex the not found exception thrown
      * @return ResponseEntity with 404 status and error details
      */
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException ex) {
-        ErrorResponse errorResponse = ErrorResponse.of(
-                404,
-                "Not Found",
-                ex.getMessage());
+        ErrorResponse errorResponse = ErrorResponse.of(404, "Not Found", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    /**
+     * Handles conflict exceptions.
+     *
+     * <p>Catches {@link ConflictException} when an operation clashes with existing state (e.g.
+     * duplicate email) and returns a 409 Conflict response.
+     *
+     * @param ex the conflict exception thrown
+     * @return ResponseEntity with 409 status and error details
+     */
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ErrorResponse> handleConflictException(ConflictException ex) {
+        ErrorResponse errorResponse = ErrorResponse.of(409, "Conflict", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
 
     /**
      * Handles validation exceptions.
      *
-     * Catches {@link ValidationException} when multiple validation rules fail
-     * and returns a 400 Bad Request response with the list of validation errors.
+     * <p>Catches {@link ValidationException} when multiple validation rules fail and returns a 400
+     * Bad Request response with the list of validation errors.
      *
      * @param ex the validation exception containing the list of errors
      * @return ResponseEntity with 400 status and detailed validation errors
      */
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(ValidationException ex) {
-        ErrorResponse errorResponse = ErrorResponse.withErrors(
-                400,
-                "Bad Request",
-                "Validation failed",
-                ex.getErrors());
+        ErrorResponse errorResponse =
+                ErrorResponse.withErrors(400, "Bad Request", "Validation failed", ex.getErrors());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
-        var errors = ex.getBindingResult().getFieldErrors().stream()
-                .map(e -> new ErrorResponse.FieldViolation(e.getField(), e.getDefaultMessage()))
-                .toList();
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException ex) {
+        var errors =
+                ex.getBindingResult().getFieldErrors().stream()
+                        .map(
+                                e ->
+                                        new ErrorResponse.FieldViolation(
+                                                e.getField(), e.getDefaultMessage()))
+                        .toList();
         return ResponseEntity.badRequest()
                 .body(ErrorResponse.withErrors(400, "Bad Request", "Validation failed", errors));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable(
+            HttpMessageNotReadableException ex) {
         return ResponseEntity.badRequest()
                 .body(ErrorResponse.of(400, "Bad Request", "Malformed JSON request"));
     }
@@ -110,9 +123,9 @@ public class GlobalExceptionHandler {
     /**
      * Handles any unexpected exception.
      *
-     * Catches all exceptions not handled by other handlers and returns a
-     * 500 Internal Server Error response. The actual exception details are
-     * logged but not exposed to the client for security reasons.
+     * <p>Catches all exceptions not handled by other handlers and returns a 500 Internal Server
+     * Error response. The actual exception details are logged but not exposed to the client for
+     * security reasons.
      *
      * @param ex the unexpected exception
      * @return ResponseEntity with 500 status and generic error message
@@ -120,38 +133,22 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
         log.error("Unexpected error occurred", ex);
-        ErrorResponse errorResponse = ErrorResponse.of(
-                500,
-                "Internal Server Error",
-                "An unexpected error"
-        );
+        ErrorResponse errorResponse =
+                ErrorResponse.of(500, "Internal Server Error", "An unexpected error");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
 
-    /**
-     * Handles authentication failures (401 Unauthorized).
-     */
+    /** Handles authentication failures (401 Unauthorized). */
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<ErrorResponse> handleUnauthorizedException(UnauthorizedException ex) {
-        ErrorResponse errorResponse = ErrorResponse.of(
-                401,
-                "Unauthorized",
-                ex.getMessage()
-        );
+        ErrorResponse errorResponse = ErrorResponse.of(401, "Unauthorized", ex.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 
-    /**
-     * Handles authorization failures (403 Forbidden).
-     */
-
+    /** Handles authorization failures (403 Forbidden). */
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException ex) {
-        ErrorResponse errorResponse = ErrorResponse.of(
-                400,
-                "Bad request",
-                ex.getMessage()
-        );
+        ErrorResponse errorResponse = ErrorResponse.of(400, "Bad request", ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 }
