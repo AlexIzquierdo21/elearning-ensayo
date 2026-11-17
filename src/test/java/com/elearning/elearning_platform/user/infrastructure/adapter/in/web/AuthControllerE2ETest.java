@@ -101,6 +101,32 @@ class AuthControllerE2ETest {
         mockMvc.perform(post("/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(login)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void shouldFailWhenLoginWithWrongPassword() throws Exception {
+        RegisterRequest register = new RegisterRequest(
+                "wrongpass@test.com",
+                "Password1",
+                "John",
+                "Doe",
+                "STUDENT"
+        );
+
+        mockMvc.perform(post("/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(register)))
+                .andExpect(status().isCreated());
+
+        LoginRequest login = new LoginRequest(
+                "wrongpass@test.com",
+                "WrongPassword1"
+        );
+
+        mockMvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(login)))
+                .andExpect(status().isUnauthorized());
     }
 }
