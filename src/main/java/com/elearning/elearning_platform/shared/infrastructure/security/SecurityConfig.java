@@ -112,7 +112,7 @@ public class SecurityConfig {
 
                 // Define authorization rules
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/h2-console/**", "/courses").permitAll()
+                        .requestMatchers("/auth/**", "/h2-console/**", "/courses", "/actuator/health/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/instructor/**").hasRole("INSTRUCTOR")
                         .requestMatchers("/student/**").hasRole("STUDENT")
