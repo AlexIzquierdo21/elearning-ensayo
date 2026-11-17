@@ -165,7 +165,7 @@ erDiagram
 **Usuario Admin**:
 ```
 email: admin@elearning.com
-password: Admin123!
+password: valor de ADMIN_PASSWORD (si no está definida, no se crea el admin)
 role: ADMIN
 ```
 
