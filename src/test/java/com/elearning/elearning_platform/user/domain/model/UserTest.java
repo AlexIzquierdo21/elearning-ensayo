@@ -1,5 +1,6 @@
 package com.elearning.elearning_platform.user.domain.model;
 
+import com.elearning.elearning_platform.shared.domain.exception.ValidationException;
 import com.elearning.elearning_platform.shared.domain.valueobject.Email;
 import org.junit.jupiter.api.Test;
 
@@ -36,7 +37,7 @@ public class UserTest {
         User user = User.create(email, password, firstName, lastName, role);
 
         // Then
-        assertNull(user.getId());
+        assertNotNull(user.getId());
         assertEquals(email, user.getEmail());
         assertEquals(password, user.getPassword());
         assertEquals(firstName, user.getFirstName());
@@ -53,7 +54,7 @@ public class UserTest {
      */
     @Test
     void shouldFailWhenEmailIsNull() {
-        assertThrows(IllegalArgumentException.class, () ->
+        assertThrows(ValidationException.class, () ->
                 User.create(
                         null,
                         "Password1",
@@ -72,7 +73,7 @@ public class UserTest {
     void shouldFailWhenPasswordIsTooShort() {
         Email email = Email.of("test@deepcode.com");
 
-        assertThrows(IllegalArgumentException.class, () ->
+        assertThrows(ValidationException.class, () ->
                 User.create(
                         email,
                         "Pass1",
@@ -91,7 +92,7 @@ public class UserTest {
     void shouldFailWhenPasswordHasNoUppercase() {
         Email email = Email.of("test@deepcode.com");
 
-        assertThrows(IllegalArgumentException.class, () ->
+        assertThrows(ValidationException.class, () ->
                 User.create(
                         email,
                         "password1",
@@ -110,7 +111,7 @@ public class UserTest {
     void shouldFailWhenPasswordHasNoDigit() {
         Email email = Email.of("test@deepcode.com");
 
-        assertThrows(IllegalArgumentException.class, () ->
+        assertThrows(ValidationException.class, () ->
                 User.create(
                         email,
                         "Password",
@@ -165,7 +166,7 @@ public class UserTest {
     void shouldFailWhenPasswordHasNoLowercase() {
         Email email = Email.of("test@deepcode.com");  // Usa Email.of()
 
-        assertThrows(IllegalArgumentException.class, () ->
+        assertThrows(ValidationException.class, () ->
                 User.create(
                         email,
                         "PASSWORD1",  // Sin minúsculas

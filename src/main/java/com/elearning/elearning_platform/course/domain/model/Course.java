@@ -7,7 +7,6 @@ import com.elearning.elearning_platform.shared.domain.exception.ValidationExcept
 import com.elearning.elearning_platform.shared.domain.valueobject.Money;
 import com.elearning.elearning_platform.user.domain.model.User;
 import com.elearning.elearning_platform.user.domain.valueobject.UserId;
-import org.testng.annotations.IFactoryAnnotation;
 
 import java.math.BigDecimal;
 import java.time.Instant;

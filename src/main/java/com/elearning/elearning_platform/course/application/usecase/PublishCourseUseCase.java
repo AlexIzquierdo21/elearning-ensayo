@@ -55,7 +55,7 @@ public class PublishCourseUseCase {
         // Find Course by ID and Validates course exists
         Optional<Course> courseOptional = courseRepository.findById(command.courseId());
         if (courseOptional.isEmpty()) {
-            throw new CourseNotFoundException("Course with ID " + command.courseId() + " not found");
+            throw new CourseNotFoundException(command.courseId());
         }
 
         Course course = courseOptional.get();

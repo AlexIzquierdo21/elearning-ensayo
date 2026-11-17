@@ -66,6 +66,7 @@ class CreateCourseUseCaseTest {
 
         when(userRepository.findById(instructorId.value())).thenReturn(Optional.of(instructor));
         when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
+        when(courseRepository.save(any(Course.class))).thenAnswer(inv -> inv.getArgument(0));
 
         // When
         Course result = createCourseUseCase.execute(command);

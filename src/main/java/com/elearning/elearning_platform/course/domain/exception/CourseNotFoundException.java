@@ -23,17 +23,5 @@ public class CourseNotFoundException extends NotFoundException {
     public CourseNotFoundException(CourseId courseId) {
         super("Course", courseId.toString());
     }
-
-    /**
-     * Constructs a new CourseNotFoundException with a detailed message.
-     *
-     * This exception indicates that a specific course could not be found,
-     * providing additional context through a descriptive message.
-     *
-     * @param message a detailed message explaining the reason for the exception
-     */
-    public CourseNotFoundException(String message) {
-        super("Course", message);
-    }
 }
 

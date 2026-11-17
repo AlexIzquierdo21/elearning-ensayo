@@ -1,5 +1,6 @@
 package com.elearning.elearning_platform.user.application.usecase;
 
+import com.elearning.elearning_platform.shared.domain.exception.ValidationException;
 import com.elearning.elearning_platform.shared.domain.valueobject.Email;
 import com.elearning.elearning_platform.user.application.port.in.RegisterUserCommand;
 import com.elearning.elearning_platform.user.domain.exception.DuplicateEmailException;
@@ -107,7 +108,7 @@ class RegisterUserUseCaseTest {
 
         when(userRepository.existsByEmail(Email.of(command.email()))).thenReturn(false);
 
-        assertThrows(IllegalArgumentException.class, () -> registerUserUseCase.execute(command));
+        assertThrows(ValidationException.class, () -> registerUserUseCase.execute(command));
         verify(userRepository, never()).save(any(User.class));
     }
 
@@ -121,7 +122,7 @@ class RegisterUserUseCaseTest {
 
         when(userRepository.existsByEmail(Email.of(command.email()))).thenReturn(false);
 
-        assertThrows(IllegalArgumentException.class, () -> registerUserUseCase.execute(command));
+        assertThrows(ValidationException.class, () -> registerUserUseCase.execute(command));
         verify(userRepository, never()).save(any(User.class));
     }
 }

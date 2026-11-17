@@ -5,6 +5,8 @@ import com.elearning.elearning_platform.shared.domain.exception.NotFoundExceptio
 import com.elearning.elearning_platform.shared.domain.exception.UnauthorizedException;
 import com.elearning.elearning_platform.shared.domain.exception.ValidationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -81,6 +83,21 @@ public class GlobalExceptionHandler {
                 "Validation failed",
                 ex.getErrors());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+        var errors = ex.getBindingResult().getFieldErrors().stream()
+                .map(e -> new ErrorResponse.FieldViolation(e.getField(), e.getDefaultMessage()))
+                .toList();
+        return ResponseEntity.badRequest()
+                .body(ErrorResponse.withErrors(400, "Bad Request", "Validation failed", errors));
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+        return ResponseEntity.badRequest()
+                .body(ErrorResponse.of(400, "Bad Request", "Malformed JSON request"));
     }
 
     /**

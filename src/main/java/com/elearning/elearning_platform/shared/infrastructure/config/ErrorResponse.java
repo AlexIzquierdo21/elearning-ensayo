@@ -20,7 +20,7 @@ public record ErrorResponse(LocalDateTime timestamp,
                             String error,
                             String message,
                             String path,
-                            List<String> errors) {
+                            List<?> errors) {
 
     /// Constructor para errores simples (sin path ni errors)
     public static ErrorResponse of(int status, String error, String message) {
@@ -33,7 +33,10 @@ public record ErrorResponse(LocalDateTime timestamp,
     }
 
     /// Constructor para ValidationException con lista de errores
-    public static ErrorResponse withErrors(int status, String error, String message, List<String> errors) {
+    public static ErrorResponse withErrors(int status, String error, String message, List<?> errors) {
         return new ErrorResponse(LocalDateTime.now(), status, error, message, null, errors);
     }
+
+    /// Error de validación de un campo concreto del request (@Valid)
+    public record FieldViolation(String field, String message) {}
 }

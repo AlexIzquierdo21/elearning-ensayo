@@ -85,7 +85,7 @@ class PublishCourseUseCaseTest {
         // When & Then
         CourseNotFoundException exception = assertThrows(CourseNotFoundException.class,
                 () -> publishCourseUseCase.execute(command));
-        assertEquals("Course with ID " + courseId + " not found", exception.getMessage());
+        assertEquals("Course with id " + courseId + " not found", exception.getMessage());
 
         verify(courseRepository).findById(courseId);
         verify(userRepository, never()).findById(any());

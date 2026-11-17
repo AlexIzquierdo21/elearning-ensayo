@@ -3,6 +3,7 @@ package com.elearning.elearning_platform.user.application.usecase;
 import com.elearning.elearning_platform.shared.domain.valueobject.Email;
 import com.elearning.elearning_platform.user.application.port.in.RegisterUserCommand;
 import com.elearning.elearning_platform.user.domain.exception.DuplicateEmailException;
+import com.elearning.elearning_platform.shared.domain.exception.ValidationException;
 import com.elearning.elearning_platform.user.domain.model.Role;
 import com.elearning.elearning_platform.user.domain.model.User;
 import com.elearning.elearning_platform.user.domain.port.out.UserRepositoryPort;
@@ -69,7 +70,7 @@ public class RegisterUserUseCase {
         try {
             role = Role.valueOf(command.role().toUpperCase());
         } catch (IllegalArgumentException ex) {
-            throw new IllegalArgumentException("Invalid role: " + command.role());
+            throw new ValidationException("Invalid role: " + command.role());
         }
         /// Password validation
         User.validateRawPassword(command.password());
