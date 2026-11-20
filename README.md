@@ -9,7 +9,7 @@ Proyecto de aprendizaje enfocado en dominar los principios de arquitectura hexag
 ## Stack Técnico
 
 - **Java**: 21 (LTS)
-- **Spring Boot**: 3.2.x
+- **Spring Boot**: 4.0.x
 - **Spring Data JPA**: Persistencia
 - **Spring Security**: Autenticación/Autorización
 - **H2 Database**: Desarrollo (in-memory)
